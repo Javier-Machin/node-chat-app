@@ -16,6 +16,16 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('New user connected');
 
+  // listen to messages created by client and send it to every connected client
+  socket.on('createMessage', (message) => {
+    socket.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().toLocaleString()
+    });
+  })
+  
+
   // listen to client disconnections
   socket.on('disconnect', () => {
     console.log('Disconnected from server');
