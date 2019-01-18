@@ -24,9 +24,10 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'Beware! Someone joined the chat!'));
 
   // listen to messages created by client
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     //send it to every connected client (io.emit rather than socket.emit)
     io.emit('newMessage', generateMessage(message.from, message.text));
+    callback('This is from the server!');
   });
 
   // listen to client disconnections
