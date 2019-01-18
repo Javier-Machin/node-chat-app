@@ -16,17 +16,29 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  // socket.emit would send an event only to the one socket that connected
+  // socket.emit sends an event only to the one socket that connected
+  socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to the chat app!',
+    createdAt: new Date().toLocaleString()
+  });
 
-  // listen to messages created by client and send it to every connected client (io.emit rather than socket.emit)
+  // socket.broadcast.emit sends an event to every connected client but this socket
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'Beware! Someone joined the chat!',
+    createdAt: new Date().toLocaleString()
+  })
+
+  // listen to messages created by client
   socket.on('createMessage', (message) => {
+    //send it to every connected client (io.emit rather than socket.emit)
     io.emit('newMessage', {
       from: message.from,
       text: message.text,
       createdAt: new Date().toLocaleString()
     });
-  })
-  
+  });
 
   // listen to client disconnections
   socket.on('disconnect', () => {
