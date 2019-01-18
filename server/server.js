@@ -16,9 +16,11 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  // listen to messages created by client and send it to every connected client
+  // socket.emit would send an event only to the one socket that connected
+
+  // listen to messages created by client and send it to every connected client (io.emit rather than socket.emit)
   socket.on('createMessage', (message) => {
-    socket.emit('newMessage', {
+    io.emit('newMessage', {
       from: message.from,
       text: message.text,
       createdAt: new Date().toLocaleString()

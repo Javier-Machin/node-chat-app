@@ -5,10 +5,10 @@ socket.on('connect', function () {
   console.log('Connected to server');
 
   // send a message to the server
-  socket.emit('createMessage', {
-    from: 'User@example.com',
-    text: 'Message from client to server'
-  });
+  // socket.emit('createMessage', {
+  //   from: 'User@example.com',
+  //   text: 'Message from client to server'
+  // });
 });
 
 // listen to messages emitted from the server
