@@ -7,8 +7,6 @@ socket.on('connect', function () {
 
 // listen to messages emitted from the server
 socket.on('newMessage', function (message) {
-  console.log('New Message!', message);
-
   const li = document.createElement("li");
   li.innerHTML = `${message.from}: ${message.text}`;
 
@@ -44,13 +42,14 @@ const messageForm = document.getElementById('message-form');
 messageForm.addEventListener('submit', function (e) {
   e.preventDefault();
 
-  const text = document.querySelector("input[name='message']").value;
+  const textBox = document.querySelector("input[name='message']");
 
   socket.emit('createMessage', {
     from: 'User',
-    text
+    text: textBox.value
   }, function (data) {
-    console.log(data);
+    // resets input after sending message
+    textBox.value = '';
   });
 });
 
@@ -62,8 +61,15 @@ const locationButton = document.getElementById("send-location");
 locationButton.addEventListener("click", function () {
   if (!navigator.geolocation) return alert('Geolocation not supported by your browser.');
 
-  // fetch location and emit event with coordinates
+  // change button text to give feedback on the request and disable it
+  locationButton.innerHTML = 'Sending location...';
+  locationButton.disabled = true;
+
   navigator.geolocation.getCurrentPosition(function (position) {
+    // reset button to original state once the request is done
+    locationButton.innerHTML = 'Send location';
+    locationButton.disabled = false;
+
     socket.emit('createLocationMessage', {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
