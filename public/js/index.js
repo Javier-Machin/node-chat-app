@@ -8,33 +8,33 @@ socket.on('connect', function () {
 // listen to messages emitted from the server and display them
 socket.on('newMessage', function (message) {
   const formattedTime = moment(message.createdAt).format('h:mm a');
-  const li = document.createElement("li");
-  li.innerHTML = `${message.from} ${formattedTime}: ${message.text}`;
+  const template = document.getElementById('message-template').innerHTML;
+  const html = Mustache.render(template, {
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime
+  });
 
-  document.getElementById("received-messages").appendChild(li);
+  document.getElementById("received-messages").innerHTML += html;
+});
+
+// listen to location messages emitted from the server and display them
+socket.on('newLocationMessage', function (message) {
+  const formattedTime = moment(message.createdAt).format('h:mm a');
+  const template = document.getElementById('location-message-template').innerHTML;
+  const html = Mustache.render(template, {
+    url: message.url,
+    from: message.from,
+    createdAt: formattedTime
+  });
+
+  document.getElementById("received-messages").innerHTML += html;
 });
 
 // listen to server disconnection
 socket.on('disconnect', function () {
   console.log('Disconnected from server');
 });
-
-// listen to location messages emitted from the server and display them
-socket.on('newLocationMessage', function (message) {
-  const formattedTime = moment(message.createdAt).format('h:mm a');
-  const li = document.createElement('li');
-  const a = document.createElement('a');
-
-  a.target = '_blank';
-  a.href = message.url;
-  a.innerHTML = 'My current location'
-
-  li.innerHTML = `${message.from} ${formattedTime}: `
-  li.appendChild(a);
-
-  document.getElementById("received-messages").appendChild(li);
-});
-
 
 // listen to form submit and create a createMessage event using the input value as text
 
