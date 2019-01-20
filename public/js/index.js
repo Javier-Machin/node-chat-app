@@ -1,25 +1,5 @@
 const socket = io();
 
-
-function scrollToBottom() {
-  // Selectors
-  const messages = document.getElementById('received-messages');
-  const newMessage = messages.lastElementChild;
-  // Heights
-  const clientHeight = messages.clientHeight;
-  const scrollTop = messages.scrollTop;
-  const scrollHeight = messages.scrollHeight;
-  const newMessageHeight = newMessage.clientHeight;
-  let lastMessageHeight = 0;
-  if (newMessage.previousElementSibling) {
-    lastMessageHeight = newMessage.previousElementSibling.clientHeight
-  }
-
-  if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
-    messages.scrollTop = scrollHeight;
-  }
-}
-
 // listen to server successful connection
 socket.on('connect', function () {
   console.log('Connected to server');
@@ -28,13 +8,14 @@ socket.on('connect', function () {
 // listen to messages emitted from the server and display them
 socket.on('newMessage', function (message) {
   const formattedTime = moment(message.createdAt).format('h:mm a');
-  const template = document.getElementById('message-template').innerHTML;
+  let template = document.getElementById('message-template').innerHTML;
+
   const html = Mustache.render(template, {
     text: message.text,
     from: message.from,
     createdAt: formattedTime
   });
-
+  
   document.getElementById("received-messages").innerHTML += html;
   scrollToBottom();
 });
