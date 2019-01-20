@@ -5,10 +5,11 @@ socket.on('connect', function () {
   console.log('Connected to server');
 });
 
-// listen to messages emitted from the server
+// listen to messages emitted from the server and display them
 socket.on('newMessage', function (message) {
+  const formattedTime = moment(message.createdAt).format('h:mm a');
   const li = document.createElement("li");
-  li.innerHTML = `${message.from}: ${message.text}`;
+  li.innerHTML = `${message.from} ${formattedTime}: ${message.text}`;
 
   document.getElementById("received-messages").appendChild(li);
 });
@@ -18,8 +19,9 @@ socket.on('disconnect', function () {
   console.log('Disconnected from server');
 });
 
-// listen to location messaged emitted from the server
+// listen to location messages emitted from the server and display them
 socket.on('newLocationMessage', function (message) {
+  const formattedTime = moment(message.createdAt).format('h:mm a');
   const li = document.createElement('li');
   const a = document.createElement('a');
 
@@ -27,9 +29,8 @@ socket.on('newLocationMessage', function (message) {
   a.href = message.url;
   a.innerHTML = 'My current location'
 
-  li.text = `${message.from}: `
+  li.innerHTML = `${message.from} ${formattedTime}: `
   li.appendChild(a);
-  console.log(li);
 
   document.getElementById("received-messages").appendChild(li);
 });
