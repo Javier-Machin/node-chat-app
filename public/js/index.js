@@ -7,18 +7,14 @@ function scrollToBottom() {
   const newMessage = messages.lastElementChild;
   // Heights
   const clientHeight = messages.clientHeight;
-
   const scrollTop = messages.scrollTop;
-  
   const scrollHeight = messages.scrollHeight;
-  
   const newMessageHeight = newMessage.clientHeight;
-
   let lastMessageHeight = 0;
-  if (messages.children[messages.children.length - 2]) {
-    lastMessageHeight = messages.children[messages.children.length - 2].clientHeight;
+  if (newMessage.previousElementSibling) {
+    lastMessageHeight = newMessage.previousElementSibling.clientHeight
   }
- 
+
   if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
     messages.scrollTop = scrollHeight;
   }
