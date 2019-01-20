@@ -1,5 +1,29 @@
 const socket = io();
 
+
+function scrollToBottom() {
+  // Selectors
+  const messages = document.getElementById('received-messages');
+  const newMessage = messages.lastElementChild;
+  // Heights
+  const clientHeight = messages.clientHeight;
+
+  const scrollTop = messages.scrollTop;
+  
+  const scrollHeight = messages.scrollHeight;
+  
+  const newMessageHeight = newMessage.clientHeight;
+
+  let lastMessageHeight = 0;
+  if (messages.children[messages.children.length - 2]) {
+    lastMessageHeight = messages.children[messages.children.length - 2].clientHeight;
+  }
+ 
+  if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+    messages.scrollTop = scrollHeight;
+  }
+}
+
 // listen to server successful connection
 socket.on('connect', function () {
   console.log('Connected to server');
@@ -16,6 +40,7 @@ socket.on('newMessage', function (message) {
   });
 
   document.getElementById("received-messages").innerHTML += html;
+  scrollToBottom();
 });
 
 // listen to location messages emitted from the server and display them
@@ -29,6 +54,7 @@ socket.on('newLocationMessage', function (message) {
   });
 
   document.getElementById("received-messages").innerHTML += html;
+  scrollToBottom();
 });
 
 // listen to server disconnection
