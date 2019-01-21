@@ -8,7 +8,7 @@ socket.on('connect', function () {
 // listen to messages emitted from the server and display them
 socket.on('newMessage', function (message) {
   const formattedTime = moment(message.createdAt).format('h:mm a');
-  let template = document.getElementById('message-template').innerHTML;
+  const template = document.getElementById('message-template').innerHTML;
 
   const html = Mustache.render(template, {
     text: message.text,
