@@ -4,6 +4,7 @@ const express = require('express');
 const socketIO = require('socket.io');
 
 const { generateMessage, generateLocationMessage } = require('./utils/message');
+const { isRealString } = require('./utils/validation');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 const app = express();
@@ -22,6 +23,15 @@ io.on('connection', (socket) => {
 
   // socket.broadcast.emit sends an event to every connected client but this socket
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'Beware! Someone joined the chat!'));
+
+  // listen to join events emitted by the user
+  socket.on('join', (params, callback) => {
+    if (!isRealString(params.name) || !isRealString(params.room)) {
+      callback('Name and room name are required.');
+    }
+
+    callback();
+  });
 
   // listen to messages created by client
   socket.on('createMessage', (message, callback) => {

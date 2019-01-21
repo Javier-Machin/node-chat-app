@@ -1,8 +1,17 @@
 const socket = io();
 
-// listen to server successful connection
+// listen to server connection
 socket.on('connect', function () {
-  console.log('Connected to server');
+  const params = queryString.parse(window.location.search);
+
+  socket.emit('join', params, function (err) {
+    if (err) {
+      alert(err);
+      window.location.href = '/';
+    } else {
+      console.log('No error');
+    }
+  });
 });
 
 // listen to messages emitted from the server and display them
