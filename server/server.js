@@ -18,18 +18,22 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  // socket.emit sends an event only to the one socket that connected
-  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
-
-  // socket.broadcast.emit sends an event to every connected client but this socket
-  socket.broadcast.emit('newMessage', generateMessage('Admin', 'Beware! Someone joined the chat!'));
-
   // listen to join events emitted by the user
   socket.on('join', (params, callback) => {
     if (!isRealString(params.name) || !isRealString(params.room)) {
       callback('Name and room name are required.');
     }
 
+    socket.join(params.room);
+    // socket.leave('roomName');
+
+    // io.emit -> io.to('roomName').emit()
+    // socket.broadcast.emite -> socket.broadcast.to('roomName').emit()
+
+    // socket.emit() sends an event only to the one socket that connected
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+    // socket.broadcast.to().emit() sends an event to every connected client in the specified room but this socket
+    socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin',  `Beware! ${params.name} has joined!`));
     callback();
   });
 
