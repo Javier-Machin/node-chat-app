@@ -40,15 +40,26 @@ io.on('connection', (socket) => {
 
   // listen to messages created by client
   socket.on('createMessage', (message, callback) => {
-    //send it to every connected client (io.emit rather than socket.emit)
-    io.emit('newMessage', generateMessage(message.from, message.text));
+    const user = usersList.getUser(socket.id);
+
+    if (user && isRealString(message.text)) {
+      //send it to every connected client in the room (io.emit rather than socket.emit)
+      io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+    }
+
+    
     callback();
   });
 
   // listen to createLocationMessage events emitted by the user
   socket.on('createLocationMessage', (coords) => {
-    // generate a link with the location in google maps to every connected client
-    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+    const user = usersList.getUser(socket.id);
+
+    if (user) {
+      // generate a link with the location in google maps to every connected client in the room
+      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
+    }
+    
   });
 
   // listen to client disconnections

@@ -58,7 +58,7 @@ socket.on('updateUserList', function (users) {
 
     ol.appendChild(li);
   });
-  
+
   // clear the currently displayed list
   document.getElementById("users").innerHTML = '';
   // append the updated list
@@ -75,7 +75,6 @@ messageForm.addEventListener('submit', function (e) {
   const textBox = document.querySelector("input[name='message']");
 
   socket.emit('createMessage', {
-    from: 'User',
     text: textBox.value
   }, function (data) {
     // resets input after sending message
