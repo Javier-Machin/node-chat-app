@@ -5,11 +5,13 @@ const socketIO = require('socket.io');
 
 const { generateMessage, generateLocationMessage } = require('./utils/message');
 const { isRealString } = require('./utils/validation');
+const { UsersList } = require('./utils/users-list');
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+const usersList = new UsersList();
 
 // add express static middleware
 app.use(express.static(publicPath));
@@ -21,15 +23,14 @@ io.on('connection', (socket) => {
   // listen to join events emitted by the user
   socket.on('join', (params, callback) => {
     if (!isRealString(params.name) || !isRealString(params.room)) {
-      callback('Name and room name are required.');
+      return callback('Name and room name are required.');
     }
 
     socket.join(params.room);
-    // socket.leave('roomName');
+    usersList.removeUser(socket.id);
+    usersList.addUser(socket.id, params.name, params.room)
 
-    // io.emit -> io.to('roomName').emit()
-    // socket.broadcast.emite -> socket.broadcast.to('roomName').emit()
-
+    io.to(params.room).emit('updateUserList', usersList.getUserList(params.room));
     // socket.emit() sends an event only to the one socket that connected
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
     // socket.broadcast.to().emit() sends an event to every connected client in the specified room but this socket
@@ -52,7 +53,12 @@ io.on('connection', (socket) => {
 
   // listen to client disconnections
   socket.on('disconnect', () => {
-    console.log('Disconnected from server');
+    const user = usersList.removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit('updateUserList', usersList.getUserList(user.room));
+      io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left.`));
+    }
   });
 });
 

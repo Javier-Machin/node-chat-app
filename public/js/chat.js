@@ -48,6 +48,23 @@ socket.on('disconnect', function () {
   console.log('Disconnected from server');
 });
 
+
+socket.on('updateUserList', function (users) {
+  const ol = document.createElement("ol");
+
+  users.forEach(function(user) {
+    const li = document.createElement("li");
+    li.textContent = user;
+
+    ol.appendChild(li);
+  });
+  
+  // clear the currently displayed list
+  document.getElementById("users").innerHTML = '';
+  // append the updated list
+  document.getElementById("users").appendChild(ol);
+});
+
 // listen to form submit and create a createMessage event using the input value as text
 
 const messageForm = document.getElementById('message-form');
